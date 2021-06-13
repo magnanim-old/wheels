@@ -73,10 +73,6 @@ jobs:
         run: |
           twine check wheelhouse/*
 
-      - uses: actions/upload-artifact@v2
-        with:
-          path: ./wheelhouse/*.whl
-
       - name: Collect output
         run:  |
           tar zcf wheels.tar.gz ./wheelhouse/
