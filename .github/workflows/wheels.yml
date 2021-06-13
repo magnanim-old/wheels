@@ -26,7 +26,7 @@ jobs:
           python-version: '3.8'
           
       - name: Build wheels
-        uses: pypa/cibuildwheel
+        uses: pypa/cibuildwheel@v2.0.0a2
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_BUILD_VERBOSITY: 3
