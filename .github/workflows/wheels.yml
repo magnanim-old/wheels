@@ -7,6 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        python: [38]
         include:
           - runs-on: ubuntu-latest
             cibw-arch: manylinux_x86_64
@@ -47,9 +48,7 @@ jobs:
           
       - name: Run cibuildwheel
         shell: bash
-        run: |
-          echo "CIBW_BUILD=cp38-*" >> $GITHUB_ENV
-          python -m cibuildwheel --output-dir wheelhouse
+        run: python -m cibuildwheel --output-dir wheelhouse
           
       - name: Check built wheels
         if: matrix.cibw-arch == 'manylinux_x86_64'
