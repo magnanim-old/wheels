@@ -2,10 +2,6 @@ name: Build
 
 on: [push, pull_request]
 
-defaults:
-  run:
-    shell: msys2 {0}
-      
 jobs:
   wheels:
     name: Build wheel for cp${{ matrix.python }}-${{ matrix.platform_id }}-${{ matrix.manylinux_image }}
@@ -55,8 +51,10 @@ jobs:
       - name: Install requirements
         run: python -m pip install cibuildwheel twine
           
-      - name: Setup CMake
-        uses: msys2/setup-msys2@v2
+      - name: Add clang path to $PATH env
+        shell: bash
+        #if: runner.os == 'windows-latest'
+        run: echo "PATH=$PATH:C:\msys64\mingw64\bin" >> $GITHUB_ENV
       
       - name: Build wheels
         env:
