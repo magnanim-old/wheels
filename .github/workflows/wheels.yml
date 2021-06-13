@@ -7,25 +7,30 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        python: [38, 39]
+        bitness: [32, 64]
+        manylinux_image: [manylinux2010]
         include:
-          - runs-on: ubuntu-latest
-            cibw-arch: manylinux_x86_64
-          - runs-on: ubuntu-latest
-            cibw-arch: manylinux_i686
-          - runs-on: macos-latest
-            cibw-arch: macosx_x86_64
-          - runs-on: macos-latest
-            cibw-arch: macosx_arm64
-          - runs-on: macos-latest
-            cibw-arch: macosx_universal2
-          - runs-on: windows-latest
-            cibw-arch: win_amd64
-          - runs-on: windows-latest
-            cibw-arch: win32
-            python-arch: x86
-
-    name: Wheels • ${{ matrix.cibw-arch }}
-    runs-on: ${{ matrix.runs-on }}
+          # Run 32 and 64 bit version in parallel for Linux and Windows
+          - os: windows-latest
+            bitness: 64
+            platform_id: win_amd64
+          - os: windows-latest
+            bitness: 32
+            platform_id: win32
+          - os: ubuntu-latest
+            bitness: 64
+            platform_id: manylinux_x86_64
+          - os: ubuntu-latest
+            bitness: 32
+            platform_id: manylinux_i686
+          - os: macos-latest
+            bitness: 64
+            platform_id: macosx_x86_64
+        exclude:
+          - os: macos-latest
+            bitness: 32
 
     steps:
       - name: Checkout code
@@ -35,9 +40,6 @@ jobs:
 
       - name: Setup Python
         uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
-          architecture: ${{ matrix.python-arch }}
       
       - name: Setup CMake
         uses: jwlawson/actions-setup-cmake@v1.9
@@ -47,18 +49,26 @@ jobs:
       - name: Install requirements
         run: python -m pip install cibuildwheel twine
           
-      - name: Run cibuildwheel
-        shell: bash
+      - name: Build wheels
         env:
-          CIBW_BUILD: cp38-*
+          #CONFTEST_PATH: ${{ github.workspace }}/conftest.py
+          #CONFTEST_NAME: conftest.py
+          CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=10.13
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
+          CIBW_MANYLINUX_I686_IMAGE: ${{ matrix.manylinux_image }}
+          #CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: bash build_tools/github/repair_windows_wheels.sh {wheel} {dest_dir} ${{ matrix.bitness }}
+          #CIBW_BEFORE_TEST_WINDOWS: bash build_tools/github/build_minimal_windows_image.sh ${{ matrix.python }} ${{ matrix.bitness }}
+          #CIBW_TEST_REQUIRES: pytest pandas threadpoolctl
+          #CIBW_TEST_COMMAND: bash {project}/build_tools/github/test_wheels.sh
+          #CIBW_TEST_COMMAND_WINDOWS: bash {project}/build_tools/github/test_windows_wheels.sh ${{ matrix.python }} ${{ matrix.bitness }}
           CIBW_BUILD_VERBOSITY: 3
-          CIBW_ARCHS_MACOS: x86_64 arm64 universal2
         run: python -m cibuildwheel --output-dir wheelhouse
           
-      - name: Check built wheels
-        if: matrix.cibw-arch == 'manylinux_x86_64'
-        run: |
-          twine check wheelhouse/*
+      #- name: Check built wheels
+      #  if: matrix.cibw-arch == 'manylinux_x86_64'
+      #  run: |
+      #    twine check wheelhouse/*
 
       - name: Collect output
         run:  |
