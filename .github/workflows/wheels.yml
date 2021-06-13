@@ -59,12 +59,13 @@ jobs:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_MANYLINUX_I686_IMAGE: ${{ matrix.manylinux_image }}
+          CMAKE_ARCH: ${{ matrix.cibw-arch == 'win32' && '-A Win32' || '' }}
           #CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: bash build_tools/github/repair_windows_wheels.sh {wheel} {dest_dir} ${{ matrix.bitness }}
           #CIBW_BEFORE_TEST_WINDOWS: bash build_tools/github/build_minimal_windows_image.sh ${{ matrix.python }} ${{ matrix.bitness }}
           #CIBW_TEST_REQUIRES: pytest pandas threadpoolctl
           #CIBW_TEST_COMMAND: bash {project}/build_tools/github/test_wheels.sh
           #CIBW_TEST_COMMAND_WINDOWS: bash {project}/build_tools/github/test_windows_wheels.sh ${{ matrix.python }} ${{ matrix.bitness }}
-          CIBW_BEFORE_ALL_LINUX: pip install cmake && ln -s \$(which cmake) /usr/local/bin/cmake
+          CIBW_BEFORE_ALL_LINUX: pip install cmake && ln -s $(which cmake) /usr/local/bin/cmake
           CIBW_BUILD_VERBOSITY: 3
         run: python -m cibuildwheel --output-dir wheelhouse
           
