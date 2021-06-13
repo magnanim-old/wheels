@@ -60,6 +60,7 @@ jobs:
           ls C:/msys64/mingw32/bin
       
       - name: Build wheels
+        shell: bash
         env:
           #CONFTEST_PATH: ${{ github.workspace }}/conftest.py
           #CONFTEST_NAME: conftest.py
