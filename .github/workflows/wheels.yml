@@ -43,14 +43,13 @@ jobs:
         uses: jwlawson/actions-setup-cmake@v1.9
 
       - name: Install requirements
-        run: |
-          python -m pip install cibuildwheel twine
+        run: python -m pip install cibuildwheel twine
           
       - name: Run cibuildwheel
-          shell: bash
-          env:
-            CIBW_BUILD=cp38-${{ matrix.cibw-arch }}
-          run: python -m cibuildwheel --output-dir wheelhouse
+        shell: bash
+        env:
+          CIBW_BUILD=cp38-${{ matrix.cibw-arch }}
+        run: python -m cibuildwheel --output-dir wheelhouse
           
       - name: Check built wheels
         if: matrix.cibw-arch == 'manylinux_x86_64'
