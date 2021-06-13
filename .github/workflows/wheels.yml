@@ -9,18 +9,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
         python: [38, 39]
         bitness: [32, 64]
-        manylinux_image: [manylinux1, manylinux2010]
+        manylinux_image: [manylinux2010]
         include:
           # Run 32 and 64 bit version in parallel for Linux and Windows
-          - os: windows-latest
-            bitness: 64
-            platform_id: win_amd64
-          - os: windows-latest
-            bitness: 32
-            platform_id: win32
+          #- os: windows-latest
+          #  bitness: 64
+          #  platform_id: win_amd64
+          #- os: windows-latest
+          #  bitness: 32
+          #  platform_id: win32
           - os: ubuntu-latest
             bitness: 64
             platform_id: manylinux_x86_64
@@ -33,12 +33,6 @@ jobs:
         exclude:
           - os: macos-latest
             bitness: 32
-          # Remove manylinux1 from the windows and osx build matrix since
-          # manylinux_image is not used for these platforms
-          - os: windows-latest
-            manylinux_image: manylinux1
-          - os: macos-latest
-            manylinux_image: manylinux1
 
     steps:
       - uses: actions/checkout@v2
@@ -66,5 +60,5 @@ jobs:
         run:  |
           tar zcf wheels.tar.gz ./wheelhouse/
           ls -l
-          curl
+          ls ./wheelhouse/
           
