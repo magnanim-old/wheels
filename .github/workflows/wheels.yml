@@ -50,21 +50,13 @@ jobs:
 
       - name: Install requirements
         run: python -m pip install wheel cibuildwheel twine
-          
-      - name: Add clang path to $PATH env
-        shell: bash
-        #if: runner.os == 'windows-latest'
-        run: |
-          ls C:/msys64/mingw32/bin
-          echo "PATH=$PATH:C:\msys64\mingw64\bin" >> $GITHUB_ENV
-          ls C:/msys64/mingw32/bin
-      
+              
       - name: Build wheels
         shell: bash
         env:
           #CONFTEST_PATH: ${{ github.workspace }}/conftest.py
           #CONFTEST_NAME: conftest.py
-          CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=10.13
+          CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=10.13 PATH=$PATH:C:\msys64\mingw64\bin
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_MANYLINUX_I686_IMAGE: ${{ matrix.manylinux_image }}
