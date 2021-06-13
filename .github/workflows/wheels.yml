@@ -47,9 +47,9 @@ jobs:
           
       - name: Run cibuildwheel
         shell: bash
-        env:
-          CIBW_BUILD="cp38-*"
-        run: python -m cibuildwheel --output-dir wheelhouse
+        run: |
+          echo "CIBW_BUILD=cp38-*" >> $GITHUB_ENV
+          python -m cibuildwheel --output-dir wheelhouse
           
       - name: Check built wheels
         if: matrix.cibw-arch == 'manylinux_x86_64'
