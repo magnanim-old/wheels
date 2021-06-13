@@ -54,7 +54,10 @@ jobs:
       - name: Add clang path to $PATH env
         shell: bash
         #if: runner.os == 'windows-latest'
-        run: echo "::add-path::C:\msys64\mingw64\bin"
+        run: |
+          echo "C:\msys64\mingw32\bin" >> $GITHUB_PATH
+          echo "C:\msys64\mingw64\bin" >> $GITHUB_PATH
+          clang --version
       
       - name: Build wheels
         env:
