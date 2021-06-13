@@ -7,8 +7,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [windows-latest, ubuntu-latest, macos-latest]
-        python: [38]
         include:
           - runs-on: ubuntu-latest
             cibw-arch: manylinux_x86_64
@@ -49,6 +47,8 @@ jobs:
           
       - name: Run cibuildwheel
         shell: bash
+        env:
+          CIBW_BUILD: cp38-*
         run: python -m cibuildwheel --output-dir wheelhouse
           
       - name: Check built wheels
