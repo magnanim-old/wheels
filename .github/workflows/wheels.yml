@@ -54,7 +54,7 @@ jobs:
       - name: Add clang path to $PATH env
         shell: bash
         #if: runner.os == 'windows-latest'
-        run: echo "PATH=$PATH:C:\msys64\mingw64\bin" >> $GITHUB_ENV
+        run: echo "::add-path::C:\msys64\mingw64\bin"
       
       - name: Build wheels
         env:
@@ -74,7 +74,6 @@ jobs:
           #CIBW_BEFORE_ALL: cmake -S . -B build_dependencies  && cmake --build build_dependencies --target uunet -j 2 --config Release
           CIBW_BUILD_VERBOSITY: 3
         run: |
-          uname -a
           python -m cibuildwheel --output-dir wheelhouse
           
       #- name: Check built wheels
