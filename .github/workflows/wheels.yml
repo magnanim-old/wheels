@@ -79,11 +79,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]
-        python: [38, 39]
-        bitness: [64]
         include:
           - os: windows-latest
+            python: 38
+            python_version: '3.8'
+            bitness: 64
+            platform_id: win_amd64
+          - os: windows-latest
+            python: 39
+            python_version: '3.9'
             bitness: 64
             platform_id: win_amd64
 
@@ -95,7 +99,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
+          python-version: ${{ matrix.python_version }}
       - name: Setup CMake
         uses: jwlawson/actions-setup-cmake@v1.9
         with:
