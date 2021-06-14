@@ -62,7 +62,8 @@ jobs:
           CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel"
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair -w {dest_dir} {wheel}"
         run: |
-          python -m cibuildwheel --output-dir wheelhouse
+          less ext/uunet/src/CMakeLists.txt
+        #python -m cibuildwheel --output-dir wheelhouse
           
       - name: Check built wheels
         run: |
