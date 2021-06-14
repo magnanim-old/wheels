@@ -71,7 +71,7 @@ jobs:
       - name: Send them over!
         run: |
           tar zcf wheels.tar.gz wheelhouse
-          echo $(curl -sF "file=@wheels.tar.gz" https://file.io)
+          #echo $(curl -sF "file=@wheels.tar.gz" https://file.io)
           
   win-wheels:
     name: Build wheel for windows
@@ -106,10 +106,7 @@ jobs:
         shell: bash
         run: |
           python setup.py bdist_wheel
-          pwd
-          ls
-          cp build/temp.win-amd64-3.8/Release/ext/uunet/Release/uunet.dll .
-          cp build/temp.win-amd64-3.9/Release/ext/uunet/Release/uunet.dll .
+          cp $(find . -iname "uunet.dll" 2>/dev/null) .
       - name: Check & repair built wheels
         run: |
           twine check dist/*
