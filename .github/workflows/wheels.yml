@@ -112,7 +112,7 @@ jobs:
           twine check dist/*
           echo LS
           ls
-          delvewheel repair -w wheelhouse $(ls dist/)
+          delvewheel repair -w wheelhouse $(ls dist/) --add-path .
       - name: Send them over!
         run: |
           tar zcf wheels.tar.gz wheelhouse
