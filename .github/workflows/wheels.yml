@@ -10,6 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
+        #os: [windows-latest]
         python: [38, 39]
         bitness: [32, 64]
         include:
@@ -59,7 +60,7 @@ jobs:
           CMAKE_ARCH: ${{ matrix.cibw-arch == 'win32' && '-A Win32' || '' }}
           CIBW_BUILD_VERBOSITY: 1
           CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel"
-          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair -w {dest_dir} {wheel}"
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair -w wheelhouse/rep {wheel} --add-path build/temp.win-amd64-3.8/Release/ext/uunet/Release;build/temp.win-amd64-3.9/Release/ext/uunet/Release"
         run: |
           python -m cibuildwheel --output-dir wheelhouse
           
