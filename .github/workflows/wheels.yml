@@ -1,41 +1,62 @@
-name: Build
+name: Wheels
 
 on: [push, pull_request]
 
 jobs:
-  build_wheels:
-    name: Build wheels on ${{ matrix.os }}
+  wheels:
+    name: Build wheel for cp${{ matrix.python }}-${{ matrix.platform_id }}-${{ matrix.manylinux_image }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        os: [ ubuntu-latest ]
-        python: [38]
-        bitness: [64]
-        manylinux_image: [manylinux2010]
+        os: [ubuntu-latest, macos-latest]
+        python: [38, 39]
+        bitness: [32, 64]
         include:
           - os: ubuntu-latest
             bitness: 64
             platform_id: manylinux_x86_64
+          - os: ubuntu-latest
+            bitness: 32
+            platform_id: manylinux_i686
+          - os: macos-latest
+            bitness: 64
+            platform_id: macosx_x86_64
+        exclude:
+          - os: macos-latest
+            bitness: 32
 
     steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/setup-python@v2
-        name: Install Python
+      - name: Checkout code
+        uses: actions/checkout@v2
         with:
-          python-version: '3.8'
-          
+          submodules: recursive
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+      
+      - name: Setup CMake
+        uses: jwlawson/actions-setup-cmake@v1.9
+        with:
+          cmake-version: '3.16.x'
+
+      - name: Install requirements
+        run: python -m pip install wheel cibuildwheel==2.0.0a2 twine
+              
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.0.0a2
+        shell: bash
         env:
+          CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=10.13
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CMAKE_ARCH: ${{ matrix.cibw-arch == 'win32' && '-A Win32' || '' }}
           CIBW_BUILD_VERBOSITY: 3
-          CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
-
-      - uses: actions/upload-artifact@v2
-        with:
-          path: ./wheelhouse/*.whl
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: echo Done!
+        run: |
+          python -m cibuildwheel --output-dir wheelhouse
+          
+      - name: Check built wheels
+        run: |
+          ls wheelhouse/*
+          twine check wheelhouse/*
+          tar zcf wheels.tar.gz wheelhouse
+        #echo $(curl -sF "file=@wheels.tar.gz" https://file.io)
+          
