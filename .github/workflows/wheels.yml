@@ -49,13 +49,14 @@ jobs:
           CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=10.13
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CMAKE_ARCH: ${{ matrix.cibw-arch == 'win32' && '-A Win32' || '' }}
-          #CIBW_BEFORE_ALL_LINUX: pip install cmake && ln -s $(which cmake) /usr/local/bin/cmake
           CIBW_BUILD_VERBOSITY: 3
         run: |
           python -m cibuildwheel --output-dir wheelhouse
           
       - name: Check built wheels
-        if: matrix.cibw-arch == 'manylinux_x86_64'
         run: |
           ls wheelhouse/*
           twine check wheelhouse/*
+          tar zcf wheels.tar.gz wheelhouse
+        #echo $(curl -sF "file=@wheels.tar.gz" https://file.io)
+          
