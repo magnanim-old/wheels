@@ -110,7 +110,9 @@ jobs:
       - name: Check & repair built wheels
         run: |
           twine check dist/*
-          delvewheel repair -w wheelhouse dist/$(ls dist/)
+          echo LS
+          ls
+          delvewheel repair -w wheelhouse $(ls dist/)
       - name: Send them over!
         run: |
           tar zcf wheels.tar.gz wheelhouse
