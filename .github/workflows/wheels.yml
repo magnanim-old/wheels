@@ -9,30 +9,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        #os: [windows-latest, ubuntu-latest, macos-latest]
-        os: [macos-latest]
+        os: [ubuntu-latest, macos-latest]
         python: [38, 39]
         bitness: [32, 64]
         include:
-          #- os: windows-latest
-          #  bitness: 64
-          #  platform_id: win_amd64
-          #- os: windows-latest
-          #  bitness: 32
-          #  platform_id: win32
-          #- os: ubuntu-latest
-          #  bitness: 64
-          #  platform_id: manylinux_x86_64
-          #- os: ubuntu-latest
-          #  bitness: 32
-          #  platform_id: manylinux_i686
+          - os: ubuntu-latest
+            bitness: 64
+            platform_id: manylinux_x86_64
+          - os: ubuntu-latest
+            bitness: 32
+            platform_id: manylinux_i686
           - os: macos-latest
             bitness: 64
             platform_id: macosx_x86_64
         exclude:
           - os: macos-latest
-            bitness: 32
-          - os: windows-latest
             bitness: 32
 
     steps:
@@ -57,10 +48,7 @@ jobs:
         env:
           CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=10.15
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
-          CMAKE_ARCH: ${{ matrix.cibw-arch == 'win32' && '-A Win32' || '' }}
           CIBW_BUILD_VERBOSITY: 1
-          CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel"
-          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair -w wheelhouse/rep {wheel} --add-path build/temp.win-amd64-3.8/Release/ext/uunet/Release;build/temp.win-amd64-3.9/Release/ext/uunet/Release"
         run: |
           python -m cibuildwheel --output-dir wheelhouse
           
@@ -71,7 +59,7 @@ jobs:
       - name: Send them over!
         run: |
           tar zcf wheels.tar.gz wheelhouse
-          #echo $(curl -sF "file=@wheels.tar.gz" https://file.io)
+          echo $(curl -sF "file=@wheels.tar.gz" https://file.io)
           
   win-wheels:
     name: Build wheel for windows
