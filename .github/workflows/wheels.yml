@@ -13,15 +13,27 @@ jobs:
         python: [38, 39]
         bitness: [32, 64]
         include:
-          - os: ubuntu-latest
-            bitness: 64
-            platform_id: manylinux_x86_64
-          - os: ubuntu-latest
-            bitness: 32
-            platform_id: manylinux_i686
+          #- os: ubuntu-latest
+          #  bitness: 64
+          #  platform_id: manylinux_x86_64
+          #- os: ubuntu-latest
+          #  bitness: 32
+          #  platform_id: manylinux_i686
+          #- os: macos-latest
+          #  bitness: 64
+          #  platform_id: macosx_x86_64
+          #  env:
+          #    CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=10.15
           - os: macos-latest
             bitness: 64
             platform_id: macosx_x86_64
+            env:
+              CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=10.13
+          - os: macos-latest
+            bitness: 64
+            platform_id: macosx_x86_64
+            env:
+              CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=10.9
         exclude:
           - os: macos-latest
             bitness: 32
@@ -46,7 +58,6 @@ jobs:
       - name: Build wheels
         shell: bash
         env:
-          CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=10.15
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_BUILD_VERBOSITY: 1
         run: |
@@ -61,52 +72,52 @@ jobs:
           tar zcf wheels.tar.gz wheelhouse
           echo $(curl -sF "file=@wheels.tar.gz" https://file.io)
           
-  win-wheels:
-    name: Build wheel for windows
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-latest
-            python: 38
-            python_version: '3.8'
-            bitness: 64
-            platform_id: win_amd64
-          - os: windows-latest
-            python: 39
-            python_version: '3.9'
-            bitness: 64
-            platform_id: win_amd64
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          submodules: recursive
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python_version }}
-      - name: Setup CMake
-        uses: jwlawson/actions-setup-cmake@v1.9
-        with:
-          cmake-version: '3.20.x'
-      - name: Install requirements
-        run: python -m pip install wheel cibuildwheel==2.0.0a2 twine delvewheel
-      - name: Build wheels
-        shell: bash
-        run: |
-          python setup.py bdist_wheel
-          cp $(find . -iname "uunet.dll" 2>/dev/null) .
-      - name: Check & repair built wheels
-        run: |
-          twine check dist/*
-          echo LS
-          ls
-          delvewheel repair -w wheelhouse $(ls dist/) --add-path .
-      - name: Send them over!
-        run: |
-          tar zcf wheels.tar.gz wheelhouse
-          echo $(curl -sF "file=@wheels.tar.gz" https://file.io)
- 
+#  win-wheels:
+#    name: Build wheel for windows
+#    runs-on: ${{ matrix.os }}
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        include:
+#          - os: windows-latest
+#            python: 38
+#            python_version: '3.8'
+#            bitness: 64
+#            platform_id: win_amd64
+#          - os: windows-latest
+#            python: 39
+#            python_version: '3.9'
+#            bitness: 64
+#            platform_id: win_amd64
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#        with:
+#          submodules: recursive
+#      - name: Setup Python
+#        uses: actions/setup-python@v2
+#        with:
+#          python-version: ${{ matrix.python_version }}
+#      - name: Setup CMake
+#        uses: jwlawson/actions-setup-cmake@v1.9
+#        with:
+#          cmake-version: '3.20.x'
+#      - name: Install requirements
+#        run: python -m pip install wheel cibuildwheel==2.0.0a2 twine delvewheel
+#      - name: Build wheels
+#        shell: bash
+#        run: |
+#          python setup.py bdist_wheel
+#          cp $(find . -iname "uunet.dll" 2>/dev/null) .
+#      - name: Check & repair built wheels
+#        run: |
+#          twine check dist/*
+#          echo LS
+#          ls
+#          delvewheel repair -w wheelhouse $(ls dist/) --add-path .
+#      - name: Send them over!
+#        run: |
+#          tar zcf wheels.tar.gz wheelhouse
+#          echo $(curl -sF "file=@wheels.tar.gz" https://file.io)
+#
