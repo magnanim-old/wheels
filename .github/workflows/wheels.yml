@@ -24,16 +24,6 @@ jobs:
             platform_id: macosx_x86_64
             env:
               CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=10.15
-          - os: macos-latest
-            bitness: 64
-            platform_id: macosx_x86_64
-            env:
-              CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=10.13
-          - os: macos-latest
-            bitness: 64
-            platform_id: macosx_x86_64
-            env:
-              CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=10.9
         exclude:
           - os: macos-latest
             bitness: 32
