@@ -77,7 +77,7 @@ with open("DESCRIPTION", "r") as fh:
 try:
     setup(
     name='uunet',
-    version='1.1.1',
+    version='1.1.2',
     author='Matteo Magnani',
     author_email='matteo.magnani@it.uu.se',
     description='python porting of the R multinet library',
